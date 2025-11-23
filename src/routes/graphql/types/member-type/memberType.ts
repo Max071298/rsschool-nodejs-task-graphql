@@ -5,6 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql';
+import { GraphQlContext } from '../../schema/context.js';
 
 export const memberTypeIdEnum = new GraphQLEnumType({
   name: 'MemberTypeId',
@@ -18,7 +19,13 @@ export const memberTypeIdEnum = new GraphQLEnumType({
   },
 });
 
-export const memberType = new GraphQLObjectType({
+export type MemberType = {
+  id: 'BASIC' | 'BUSINESS';
+  discount: number;
+  postsLimitPerMonth: number;
+};
+
+export const memberType = new GraphQLObjectType<MemberType, GraphQlContext>({
   name: 'Member',
   fields: () => ({
     id: { type: new GraphQLNonNull(memberTypeIdEnum) },
