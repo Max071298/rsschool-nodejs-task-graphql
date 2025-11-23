@@ -38,10 +38,10 @@ export const rootQueryType = new GraphQLObjectType<unknown, GraphQlContext>({
 
     users: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(userType))),
-      resolve: async (_src, _args, context, info: GraphQLResolveInfo) => {
-        const parsedInfo = parseResolveInfo(info) as ResolveTree;
+      resolve: async (_src, _args, context, resolveInfo: GraphQLResolveInfo) => {
+        const parsedResolveInfoFragment = parseResolveInfo(resolveInfo) as ResolveTree;
         const { fields } = simplifyParsedResolveInfoFragmentWithType(
-          parsedInfo,
+          parsedResolveInfoFragment,
           userType,
         );
 
@@ -59,17 +59,18 @@ export const rootQueryType = new GraphQLObjectType<unknown, GraphQlContext>({
 
         users.forEach((user) => {
           if (incRel.subscribedToUser) {
-            context.prisma.subscribersOnAuthors.findMany({
-              where: { subscriberId: user.id },
-              include: { author: true },
-            });
+            const subs = users.filter((user) =>
+              user.subscribedToUser.some((sub) => sub.subscriberId === user.id),
+            );
+            context.loaders.subscribedToUserLoader.prime(user.id, subs);
           }
 
           if (incRel.userSubscribedTo) {
-            context.prisma.subscribersOnAuthors.findMany({
-              where: { authorId: user.id },
-              include: { subscriber: true },
-            });
+            const authors = users.filter((user) =>
+              user.userSubscribedTo.some((author) => author.authorId === user.id),
+            );
+
+            context.loaders.userSubscribedToLoader.prime(user.id, authors);
           }
         });
 

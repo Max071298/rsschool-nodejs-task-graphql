@@ -1,7 +1,6 @@
 import { PrismaClient, User } from '@prisma/client';
 import DataLoader from 'dataloader';
-import { GraphQlContext, prisma } from '../schema/context.js';
-import { memberType, MemberType } from '../types/member-type/memberType.js';
+import { MemberType } from '../types/member-type/memberType.js';
 import { Profile } from '../types/profile/profile.js';
 import { Post } from '../types/post/post.js';
 
