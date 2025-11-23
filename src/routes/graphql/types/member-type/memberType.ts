@@ -20,7 +20,7 @@ export const memberTypeIdEnum = new GraphQLEnumType({
 });
 
 export type MemberType = {
-  id: 'BASIC' | 'BUSINESS';
+  id: string;
   discount: number;
   postsLimitPerMonth: number;
 };
